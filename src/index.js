@@ -1,6 +1,7 @@
 import './styles.css';
 import NewsApiService from './news-service';
-// console.log(NewsApiService);
+import articlesTpl from '../src/articles.hbs';
+console.log(articlesTpl);
 
 // apiKey=4330ebfabc654a6992c2aa792f3173a3
 
@@ -26,9 +27,17 @@ refs.loadMoreBtn.addEventListener('click', onLoadMore);
 function onSearch(e) {
     e.preventDefault();
 
+    // clearArticlesContainer();
     newsApiService.query = e.currentTarget.elements.query.value;
+    // if (newsApiService.query === '') {
+    //     return alert('Enter search parameters');
+    // };
     newsApiService.resetPage();
-    newsApiService.fetchArticles();
+    // newsApiService.fetchArticles().then(articles => console.log(articles));
+    newsApiService.fetchArticles().then(articles => {
+        clearArticlesContainer();
+        appendArticlesMarkup(articles);
+    });
     // const options = {
     //     headers: {
     //         Authorization: '4330ebfabc654a6992c2aa792f3173a3',
@@ -46,7 +55,8 @@ function onSearch(e) {
 // как догрузить информацию по запросу "показать еще?" https://youtu.be/poxVZxvONF8?t=1714
 
 function onLoadMore(e) {
-    newsApiService.fetchArticles();
+    // newsApiService.fetchArticles().then(articles => console.log(articles));
+    newsApiService.fetchArticles().then(appendArticlesMarkup);
     // const options = {
     //     headers: {
     //         Authorization: '4330ebfabc654a6992c2aa792f3173a3',
@@ -62,3 +72,11 @@ function onLoadMore(e) {
 };
 
 // в отдельный файл выносим всю логику работы с API https://youtu.be/poxVZxvONF8?t=1821
+
+function appendArticlesMarkup(articles) {
+    refs.articlesContainer.insertAdjacentHTML("beforeend", articlesTpl(articles))
+}
+
+function clearArticlesContainer() {
+    refs.articlesContainer.innerHTML = '';
+}
